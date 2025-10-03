@@ -13,7 +13,7 @@ Made by **Omotayo Adediran**, Founder of **Alienpreneur**.
 ---
 
 ## Usage
-1. Open `index.html` in any browser.
+1. Open `fancy-text-neutral.html` in any browser.
 2. Paste your text, then click "Generate Styles".
 3. Copy the style you like and use it in your LinkedIn post.
 
