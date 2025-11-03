@@ -1,3 +1,5 @@
+<!doctype html>
+<html lang="en">
 <head>
   <!-- Base document settings -->
   <meta charset="utf-8"/>
@@ -29,11 +31,37 @@
   <link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
 
-  <!-- Your existing styles (unchanged) -->
+  <!-- JSON-LD: helps Google understand this is a web tool -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "LinkedIn Font Generator",
+    "operatingSystem": "Web",
+    "applicationCategory": "UtilitiesApplication",
+    "description": "Free, client-side LinkedIn font generator by The Alienpreneur. Style posts with bold, italic, circled, small caps, and more while keeping hashtags searchable.",
+    "url": "https://fonts.alienpreneur.com/",
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Alienpreneur",
+      "url": "https://alienpreneur.com"
+    }
+  }
+  </script>
+
+  <!-- Styles -->
   <style>
-    :root{ --bg:#0b0c0f; --panel:#12141a; --ink:#e8eefc; --muted:#9aa4b2; --accent:#2f855a; --accent-strong:#236647; }
+    :root{
+      --bg:#0b0c0f; --panel:#12141a; --ink:#e8eefc; --muted:#9aa4b2;
+      --accent:#2f855a; --accent-strong:#236647;
+    }
     *{box-sizing:border-box}
-    body{margin:0;background:linear-gradient(180deg,#0b0c0f,#111317 60%,#0b0c0f);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#0b0c0f,#111317 60%,#0b0c0f);
+      color:var(--ink);
+      font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;
+    }
     .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
     .card{background:var(--panel);border:1px solid #1f2430;border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
     h1{font-size:28px;margin:0 0 12px}
@@ -62,6 +90,7 @@
     .link{color:#a6d18a;text-decoration:none;border-bottom:1px dashed #a6d18a}
   </style>
 </head>
+
 <body>
   <!-- SEO-friendly intro so Google has text to show in snippets -->
   <section style="position:relative; z-index:1; max-width:900px; margin:24px auto 8px; padding:0 16px;">
@@ -116,30 +145,22 @@
   </div>
 
   <script>
-    // --- Utilities -----------------------------------------------------------
+    // --- Character source for mapping (A-Z, a-z, 0-9)
     const src = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
+    // Safer map builder: if a style is missing a character, fall back to identity (original char)
     function mapBuilder(dst) {
-      // dst must be 26 + 26 + 10 = 62 chars; if shorter, pad with identical chars
-      const need = 62;
-      let out = dst;
-      if (out.length < need) {
-        // pad digits as identity if style doesn't support them
-        const missing = need - out.length;
-        out += "0123456789".slice(0, Math.min(10, missing)).padEnd(missing, " ");
-      }
+      const need = 62; // 26 + 26 + 10
       const map = new Map();
-      for (let i = 0; i < Math.min(need, out.length); i++) {
-        map.set(src[i], out[i] || src[i]);
+      for (let i = 0; i < need; i++) {
+        map.set(src[i], dst[i] ?? src[i]);
       }
       return map;
     }
 
     function transform(text, map) {
       let res = "";
-      for (const ch of text) {
-        res += map.get(ch) ?? ch;
-      }
+      for (const ch of text) res += map.get(ch) ?? ch;
       return res;
     }
 
@@ -157,8 +178,8 @@
       }
     }
 
-    // --- Style alphabets (Unicode) ------------------------------------------
-    // Each string = 26 upper + 26 lower + 10 digits (where available).
+    // --- Unicode style alphabets ---
+    // Each string = 26 upper + 26 lower + (optionally) 10 digits
     const BOLD_ALPHANUM =
       "𝐀𝐁𝐂𝐃𝐄𝐅𝐆𝐇𝐈𝐉𝐊𝐋𝐌𝐍𝐎𝐏𝐐𝐑𝐒𝐓𝐔𝐕𝐖𝐗𝐘𝐙" +
       "𝐚𝐛𝐜𝐝𝐞𝐟𝐠𝐡𝐢𝐣𝐤𝐥𝐦𝐧𝐨𝐩𝐪𝐫𝐬𝐭𝐮𝐯𝐰𝐱𝐲𝐳" +
@@ -166,18 +187,15 @@
 
     const ITALIC_ALPHA =
       "𝐴𝐵𝐶𝐷𝐸𝐹𝐺𝐻𝐼𝐽𝐾𝐿𝑀𝑁𝑂𝑃𝑄𝑅𝑆𝑇𝑈𝑉𝑊𝑋𝑌𝑍" +
-      "𝑎𝑏𝑐𝑑𝑒𝑓𝑔ℎ𝑖𝑗𝑘𝑙𝑚𝑛𝑜𝑝𝑞𝑟𝑠𝑡𝑢𝑣𝑤𝑥𝑦𝑧" +
-      ""; // no styled digits; fallback to normal
+      "𝑎𝑏𝑐𝑑𝑒𝑓𝑔ℎ𝑖𝑗𝑘𝑙𝑚𝑛𝑜𝑝𝑞𝑟𝑠𝑡𝑢𝑣𝑤𝑥𝑦𝑧";
 
     const SCRIPT_ALPHA =
       "𝓐𝓑𝓒𝓓𝓔𝓕𝓖𝓗𝓘𝓙𝓚𝓛𝓜𝓝𝓞𝓟𝓠𝓡𝓢𝓣𝓤𝓥𝓦𝓧𝓨𝓩" +
-      "𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃" +
-      "";
+      "𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃";
 
     const FRAKTUR_ALPHA =
       "𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ" +
-      "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷" +
-      "";
+      "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷";
 
     const MONO_ALPHANUM =
       "𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉" +
@@ -189,7 +207,6 @@
       "𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫" +
       "𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡";
 
-    // Circled and squared (digits included)
     const CIRCLED =
       "ⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏ" +
       "ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ" +
@@ -200,26 +217,24 @@
       "🄰🄱🄲🄳🄴🄵🄶🄷🄸🄹🄺🄻🄼🄽🄾🄿🅀🅁🅂🅃🅄🅅🅆🅇🅈🅉" +
       "⓿①②③④⑤⑥⑦⑧⑨";
 
-    // Small caps (letters only; digits fallback to normal)
     const SMALL_CAPS =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + // use normal for uppercase
-      "ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ" +
-      ""; // no styled digits
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + // uppercase unchanged
+      "ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ";
 
-    // Build maps
+    // Build maps (missing chars fall back to identity via mapBuilder)
     const maps = {
-      Bold: mapBuilder(BOLD_ALPHANUM),
-      Italic: mapBuilder(ITALIC_ALPHA),
-      Script: mapBuilder(SCRIPT_ALPHA),
-      Fraktur: mapBuilder(FRAKTUR_ALPHA),
-      Monospace: mapBuilder(MONO_ALPHANUM),
+      "Bold": mapBuilder(BOLD_ALPHANUM),
+      "Italic": mapBuilder(ITALIC_ALPHA),
+      "Script": mapBuilder(SCRIPT_ALPHA),
+      "Fraktur": mapBuilder(FRAKTUR_ALPHA),
+      "Monospace": mapBuilder(MONO_ALPHANUM),
       "Double-Struck": mapBuilder(DOUBLE_STRUCK),
-      Circled: mapBuilder(CIRCLED),
-      Squared: mapBuilder(SQUARED),
+      "Circled": mapBuilder(CIRCLED),
+      "Squared": mapBuilder(SQUARED),
       "Small Caps": mapBuilder(SMALL_CAPS)
     };
 
-    // --- UI wiring -----------------------------------------------------------
+    // --- UI wiring ---
     const input = document.getElementById("input");
     const grid = document.getElementById("grid");
     const count = document.getElementById("count");
@@ -235,16 +250,16 @@
         const box = document.createElement("div");
         box.className = "styleBox";
 
+        const out = document.createElement("div");
+        out.className = "out";
+        out.textContent = transform(val, maps[label]);
+
         const header = document.createElement("header");
         header.innerHTML = `<span>${label}</span>`;
         const copyBtn = document.createElement("button");
         copyBtn.textContent = "Copy";
         copyBtn.addEventListener("click", () => copyText(out.textContent));
         header.appendChild(copyBtn);
-
-        const out = document.createElement("div");
-        out.className = "out";
-        out.textContent = transform(val, maps[label]);
 
         box.appendChild(header);
         box.appendChild(out);
