@@ -62,3 +62,207 @@
     .link{color:#a6d18a;text-decoration:none;border-bottom:1px dashed #a6d18a}
   </style>
 </head>
+<body>
+  <!-- SEO-friendly intro so Google has text to show in snippets -->
+  <section style="position:relative; z-index:1; max-width:900px; margin:24px auto 8px; padding:0 16px;">
+    <h1 style="margin:0 0 8px; font-size:28px;">LinkedIn Font Generator by The Alienpreneur</h1>
+    <p style="margin:0 0 10px; color:#c7d2fe;">
+      Make your LinkedIn posts stand out with bold, italic, circled, small caps, and creative Unicode styles.
+      Works best on LinkedIn, and also on Instagram, X (Twitter), WhatsApp, and more. Copy, paste, and post —
+      hashtags and @mentions stay searchable.
+    </p>
+  </section>
+
+  <noscript>
+    <section style="max-width:900px; margin:0 auto; padding:0 16px; color:#e5e7eb;">
+      <h2>How to use this tool (JavaScript required)</h2>
+      <ol>
+        <li>Type your text in the box (when JavaScript is enabled).</li>
+        <li>Choose a font style (bold, italic, circled, small caps, etc.).</li>
+        <li>Click “Copy” next to any style and paste into LinkedIn or other apps.</li>
+      </ol>
+      <p>Tip: Keep hashtags and @mentions in plain text for search and accessibility.</p>
+    </section>
+  </noscript>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="banner">
+        100% client-side. Your text never leaves your device.
+      </div>
+
+      <h2>Enter your text</h2>
+      <textarea id="input" placeholder="Type or paste your LinkedIn text here…"></textarea>
+      <div class="controls">
+        <button class="primary" id="copyPlain">Copy plain text</button>
+        <button id="clear">Clear</button>
+        <span class="muted count" id="count">0 characters</span>
+      </div>
+
+      <div class="divider">Styles</div>
+      <div class="grid" id="grid"></div>
+
+      <div class="divider">Notes</div>
+      <div class="preview">
+        Keep hashtags (#Topic) and mentions (@Name) plain for search. Fancy Unicode looks great for
+        headings and emphasis, but may affect screen readers. Use thoughtfully.
+      </div>
+
+      <div class="footer">
+        <div>Works best on LinkedIn, but you can also use it on Instagram, X (Twitter), WhatsApp, and more.</div>
+        <div>Made by <strong>Omotayo Adediran</strong> • Founder of <a class="link" href="https://alienpreneur.com" target="_blank" rel="noopener">The Alienpreneur</a></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Utilities -----------------------------------------------------------
+    const src = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    function mapBuilder(dst) {
+      // dst must be 26 + 26 + 10 = 62 chars; if shorter, pad with identical chars
+      const need = 62;
+      let out = dst;
+      if (out.length < need) {
+        // pad digits as identity if style doesn't support them
+        const missing = need - out.length;
+        out += "0123456789".slice(0, Math.min(10, missing)).padEnd(missing, " ");
+      }
+      const map = new Map();
+      for (let i = 0; i < Math.min(need, out.length); i++) {
+        map.set(src[i], out[i] || src[i]);
+      }
+      return map;
+    }
+
+    function transform(text, map) {
+      let res = "";
+      for (const ch of text) {
+        res += map.get(ch) ?? ch;
+      }
+      return res;
+    }
+
+    async function copyText(t) {
+      try {
+        await navigator.clipboard.writeText(t);
+      } catch (e) {
+        // Fallback for older browsers
+        const ta = document.createElement("textarea");
+        ta.value = t;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+      }
+    }
+
+    // --- Style alphabets (Unicode) ------------------------------------------
+    // Each string = 26 upper + 26 lower + 10 digits (where available).
+    const BOLD_ALPHANUM =
+      "𝐀𝐁𝐂𝐃𝐄𝐅𝐆𝐇𝐈𝐉𝐊𝐋𝐌𝐍𝐎𝐏𝐐𝐑𝐒𝐓𝐔𝐕𝐖𝐗𝐘𝐙" +
+      "𝐚𝐛𝐜𝐝𝐞𝐟𝐠𝐡𝐢𝐣𝐤𝐥𝐦𝐧𝐨𝐩𝐪𝐫𝐬𝐭𝐮𝐯𝐰𝐱𝐲𝐳" +
+      "𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗";
+
+    const ITALIC_ALPHA =
+      "𝐴𝐵𝐶𝐷𝐸𝐹𝐺𝐻𝐼𝐽𝐾𝐿𝑀𝑁𝑂𝑃𝑄𝑅𝑆𝑇𝑈𝑉𝑊𝑋𝑌𝑍" +
+      "𝑎𝑏𝑐𝑑𝑒𝑓𝑔ℎ𝑖𝑗𝑘𝑙𝑚𝑛𝑜𝑝𝑞𝑟𝑠𝑡𝑢𝑣𝑤𝑥𝑦𝑧" +
+      ""; // no styled digits; fallback to normal
+
+    const SCRIPT_ALPHA =
+      "𝓐𝓑𝓒𝓓𝓔𝓕𝓖𝓗𝓘𝓙𝓚𝓛𝓜𝓝𝓞𝓟𝓠𝓡𝓢𝓣𝓤𝓥𝓦𝓧𝓨𝓩" +
+      "𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃" +
+      "";
+
+    const FRAKTUR_ALPHA =
+      "𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ" +
+      "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷" +
+      "";
+
+    const MONO_ALPHANUM =
+      "𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉" +
+      "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣" +
+      "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿";
+
+    const DOUBLE_STRUCK =
+      "𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ" +
+      "𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫" +
+      "𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡";
+
+    // Circled and squared (digits included)
+    const CIRCLED =
+      "ⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏ" +
+      "ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ" +
+      "⓪①②③④⑤⑥⑦⑧⑨";
+
+    const SQUARED =
+      "🄰🄱🄲🄳🄴🄵🄶🄷🄸🄹🄺🄻🄼🄽🄾🄿🅀🅁🅂🅃🅄🅅🅆🅇🅈🅉" +
+      "🄰🄱🄲🄳🄴🄵🄶🄷🄸🄹🄺🄻🄼🄽🄾🄿🅀🅁🅂🅃🅄🅅🅆🅇🅈🅉" +
+      "⓿①②③④⑤⑥⑦⑧⑨";
+
+    // Small caps (letters only; digits fallback to normal)
+    const SMALL_CAPS =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + // use normal for uppercase
+      "ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ" +
+      ""; // no styled digits
+
+    // Build maps
+    const maps = {
+      Bold: mapBuilder(BOLD_ALPHANUM),
+      Italic: mapBuilder(ITALIC_ALPHA),
+      Script: mapBuilder(SCRIPT_ALPHA),
+      Fraktur: mapBuilder(FRAKTUR_ALPHA),
+      Monospace: mapBuilder(MONO_ALPHANUM),
+      "Double-Struck": mapBuilder(DOUBLE_STRUCK),
+      Circled: mapBuilder(CIRCLED),
+      Squared: mapBuilder(SQUARED),
+      "Small Caps": mapBuilder(SMALL_CAPS)
+    };
+
+    // --- UI wiring -----------------------------------------------------------
+    const input = document.getElementById("input");
+    const grid = document.getElementById("grid");
+    const count = document.getElementById("count");
+    const copyPlainBtn = document.getElementById("copyPlain");
+    const clearBtn = document.getElementById("clear");
+
+    function render() {
+      const val = input.value;
+      count.textContent = `${val.length} characters`;
+
+      grid.innerHTML = "";
+      Object.keys(maps).forEach(label => {
+        const box = document.createElement("div");
+        box.className = "styleBox";
+
+        const header = document.createElement("header");
+        header.innerHTML = `<span>${label}</span>`;
+        const copyBtn = document.createElement("button");
+        copyBtn.textContent = "Copy";
+        copyBtn.addEventListener("click", () => copyText(out.textContent));
+        header.appendChild(copyBtn);
+
+        const out = document.createElement("div");
+        out.className = "out";
+        out.textContent = transform(val, maps[label]);
+
+        box.appendChild(header);
+        box.appendChild(out);
+        grid.appendChild(box);
+      });
+    }
+
+    input.addEventListener("input", render);
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      render();
+      input.focus();
+    });
+    copyPlainBtn.addEventListener("click", () => copyText(input.value));
+
+    // Initial demo text to show something on first load (also helps Google)
+    input.value = "Make Your LinkedIn Posts Stand Out with Professional Fonts by The Alienpreneur";
+    render();
+  </script>
+</body>
+</html>
