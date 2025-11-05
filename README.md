@@ -1,3 +1,6 @@
+📘 **Project Notes:**  
+See the full internal documentation here → [PROJECT_NOTES.pdf](PROJECT_NOTES.pdf)
+
 # LinkedIn Font Generator
 
 A professional tool to style your LinkedIn posts with bold, italic, circled, or creative Unicode text.  
