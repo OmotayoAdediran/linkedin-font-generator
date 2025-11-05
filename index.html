@@ -19,7 +19,7 @@
   <meta property="og:site_name" content="Alienpreneur" />
   <meta property="article:publisher" content="https://www.linkedin.com/company/alienpreneur/" />
 
-  <!-- 🗓️ Publication Info -->
+  <!-- Publication Info -->
   <meta property="article:published_time" content="2025-11-03T12:00:00Z" />
   <meta property="article:modified_time" content="2025-11-03T12:00:00Z" />
   <meta property="article:author" content="The Alienpreneur" />
@@ -34,10 +34,10 @@
 
   <!-- PWA hooks -->
   <meta name="theme-color" content="#0b0c0f" />
-  <link rel="manifest" href="/site.webmanifest" />
-  <link rel="icon" href="/favicon.png" sizes="32x32" type="image/png" />
-  <link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+  <link rel="manifest" href="./site.webmanifest" />
+  <link rel="icon" href="./favicon.png" sizes="32x32" type="image/png" />
+  <link rel="icon" href="./favicon-192.png" sizes="192x192" type="image/png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" sizes="180x180" />
 
   <!-- JSON-LD (Organization) -->
   <script type="application/ld+json">
@@ -52,4 +52,230 @@
   }
   </script>
 
-  <!-- Plausible (privacy-friendly). Remove if not needed -->
+  <!-- Styles -->
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container flex-between">
+      <div class="brand">
+        <span class="logo-dot" aria-hidden="true"></span>
+        <h1>Professional & Fancy LinkedIn Fonts <span class="by">by Alienpreneur</span></h1>
+        <p class="tagline">Readable Unicode styles for headlines, emphasis, and flair — while keeping hashtags and @mentions searchable.</p>
+      </div>
+      <nav class="header-cta">
+        <a class="button ghost" href="https://alienpreneur.com" target="_blank" rel="noopener">Alienpreneur</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="composer card">
+      <label for="source" class="label">Type your text</label>
+      <textarea id="source" rows="3" placeholder="Type here… e.g., Big news: our launch is live 🚀 #AI #Indiana @Alienpreneur"></textarea>
+
+      <div class="options">
+        <label class="check">
+          <input type="checkbox" id="keepSearchable" checked />
+          Keep hashtags (#) and mentions (@) plain for search
+        </label>
+      </div>
+    </section>
+
+    <section class="results">
+      <div class="grid cols-2" id="outputGrid" aria-live="polite"></div>
+    </section>
+
+    <section class="notes-grid">
+      <article class="card">
+        <h2>Notes</h2>
+        <ul class="list">
+          <li>This generator runs 100% in your browser—no tracking, no uploads.</li>
+          <li>Unicode “fancy” characters are widely supported on LinkedIn, but older devices may fall back to plain text.</li>
+          <li>Overuse hurts readability. Use styling for headings or emphasis, not entire paragraphs.</li>
+        </ul>
+      </article>
+
+      <article class="card accent">
+        <h2>Professional Notes (LinkedIn Best Practices)</h2>
+        <ul class="list">
+          <li><strong>Keep hashtags and @mentions plain ASCII</strong> so they remain clickable and searchable.</li>
+          <li><strong>Prioritize clarity.</strong> Use decorative text sparingly—think headers, key phrases, or CTAs.</li>
+          <li><strong>Accessibility matters.</strong> Screen readers may read some Unicode oddly. Provide context or keep crucial info in plain text.</li>
+          <li><strong>Consistency wins.</strong> Pick 1–2 styles that match your brand tone; don’t mix too many in one post.</li>
+          <li><strong>Test on mobile.</strong> Preview your post on a phone to confirm spacing, line breaks, and legibility.</li>
+        </ul>
+      </article>
+    </section>
+
+    <footer class="site-footer">
+      <p>© 2025 The Alienpreneur™. All rights reserved. • <a href="./sitemap.xml">Sitemap</a> • <a href="./robots.txt">Robots</a></p>
+    </footer>
+  </main>
+
+  <template id="row-template">
+    <div class="font-item card">
+      <div class="font-head">
+        <h3 class="font-name"></h3>
+        <button class="button copy" type="button">Copy</button>
+      </div>
+      <p class="font-output"></p>
+      <p class="font-hint muted"></p>
+    </div>
+  </template>
+
+  <script>
+    // ---------- Tiny DOM helpers ----------
+    const $ = (s, el=document) => el.querySelector(s);
+    const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
+    const source = $('#source');
+    const keepSearchable = $('#keepSearchable');
+    const grid = $('#outputGrid');
+    const rowTpl = $('#row-template');
+
+    // Preserve hashtags/mentions as plain ASCII when checked
+    function preserveSearchables(text) {
+      if (!keepSearchable.checked) return text;
+      const tokens = text.split(/(\B#[\p{L}\p{N}_]+|\B@[\p{L}\p{N}_]+)/ug);
+      return tokens.map(t => (/^\B[#@]/u.test(t) ? {raw:t} : {text:t}));
+    }
+
+    // Build a character map from two equal-length strings
+    function makeMap(plain, fancy) {
+      const map = new Map();
+      const p = [...plain], f = [...fancy];
+      p.forEach((ch, i) => map.set(ch, f[i]));
+      return map;
+    }
+
+    function transform(text, maps) {
+      const charMaps = maps.map(([plain, fancy]) => makeMap(plain, fancy));
+      function convertChunk(chunk) {
+        return [...chunk].map(ch => {
+          for (const m of charMaps) if (m.has(ch)) return m.get(ch);
+          const lower = ch.toLowerCase();
+          for (const m of charMaps) if (m.has(lower)) return m.get(lower);
+          return ch;
+        }).join('');
+      }
+      const pieces = preserveSearchables(text);
+      return pieces.map(p => p.raw ?? convertChunk(p.text)).join('');
+    }
+
+    // Alphabets
+    const AZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const az = 'abcdefghijklmnopqrstuvwxyz';
+    const digits = '0123456789';
+
+    // Fancy sets
+    const boldAZ = '𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭';
+    const boldaz = '𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇';
+    const bold09 = '𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟕𝟴𝟵';
+
+    const italicAZ = '𝘈𝘉𝘊𝘋𝘌𝘍𝘎𝘏𝘐𝘑𝘒𝘓𝘔𝘕𝘖𝘗𝘘𝘙𝘚𝘛𝘜𝘝𝘞𝘟𝘠𝘡';
+    const italicaz = '𝘢𝘣𝘤𝘥𝘦𝘧𝘨𝘩𝘪𝘫𝘬𝘭𝘮𝘯𝘰𝘱𝘲𝘳𝘴𝘵𝘶𝘷𝘸𝘹𝘺𝘻';
+
+    const boldItalicAZ = '𝘼𝘽𝘾𝘿𝙀𝙁𝙂𝙃𝙄𝙅𝙆𝙇𝙈𝙉𝙊𝙋𝙌𝙍𝙎𝙏𝙐𝙑𝙒𝙓𝙔𝙕';
+    const boldItalicaz = '𝙖𝙗𝙘𝙙𝙚𝙛𝙜𝙝𝙞𝙟𝙠𝙡𝙢𝙣𝙤𝙥𝙦𝙧𝙨𝙩𝙪𝙫𝙬𝙭𝙮𝙯';
+
+    const monoAZ = '𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉';
+    const monoaz = '𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣';
+    const mono09 = '𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿';
+
+    const scriptAZ = '𝓐𝓑𝓒𝓓𝓔𝓕𝓖𝓗𝓘𝓙𝓚𝓛𝓜𝓝𝓞𝓟𝓠𝓡𝓢𝓣𝓤𝓥𝓦𝓧𝓨𝓩';
+    const scriptaz = '𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃';
+
+    const doubleAZ = '𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ';
+    const doubleaz = '𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝘂𝘃𝘄𝘅𝘆𝘻';
+    const double09 = '𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡';
+
+    // Fraktur: uses special letters to complete 26 chars
+    const frakAZ = '𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ';
+    const frakaz = '𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷';
+
+    const circAZ = 'ⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏ';
+    const circaz = 'ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ';
+    const circ09 = '⓪①②③④⑤⑥⑦⑧⑨';
+
+    const sqAZ = '🅐🅑🅒🅓🅔🅕🅖🅗🅘🅙🅚🅛🅜🅝🅞🅟🅠🅡🅢🅣🅤🅥🅦🅧🅨🅩';
+    const sqaz = '🄰🄱🄲🄳🄴🄵🄶🄷🄸🄹🄺🄻🄼🄽🄾🄿🅀🅁🅂🅃🅄🅅🅆🅇🅈🅉';
+    const sq09 = '⓿❶❷❸❹❺❻❼❽❾';
+
+    // Small-caps & Upside-down via custom maps
+    const smallCaps = {
+      map: new Map([
+        ...'abcdefghijklmnopqrstuvwxyz'.split('').map((c,i)=>[c, 'ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ'[i] || c]),
+        ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((c,i)=>[c, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i]])
+      ])
+    };
+
+    const upside = {
+      map: new Map([
+        ['a','ɐ'],['b','q'],['c','ɔ'],['d','p'],['e','ǝ'],['f','ɟ'],['g','ƃ'],['h','ɥ'],['i','ᴉ'],['j','ɾ'],['k','ʞ'],['l','l'],['m','ɯ'],['n','u'],['o','o'],['p','d'],['q','b'],['r','ɹ'],['s','s'],['t','ʇ'],['u','n'],['v','ʌ'],['w','ʍ'],['x','x'],['y','ʎ'],['z','z'],
+        ['A','∀'],['B','𐐒'],['C','Ɔ'],['D','◖'],['E','Ǝ'],['F','Ⅎ'],['G','פ'],['H','H'],['I','I'],['J','ſ'],['K','ʞ'],['L','˥'],['M','W'],['N','N'],['O','O'],['P','Ԁ'],['Q','Ό'],['R','ᴚ'],['S','S'],['T','⊥'],['U','∩'],['V','Λ'],['W','M'],['X','X'],['Y','ʎ'],['Z','Z']
+      ])
+    };
+
+    const sets = [
+      { name: 'Bold',           maps: [[AZ,boldAZ],[az,boldaz],[digits,bold09]],      hint:'Great for headers/emphasis' },
+      { name: 'Italic',         maps: [[AZ,italicAZ],[az,italicaz]],                  hint:'Soft emphasis' },
+      { name: 'Bold Italic',    maps: [[AZ,boldItalicAZ],[az,boldItalicaz],[digits,bold09]], hint:'Eye-catching headers' },
+      { name: 'Monospace',      maps: [[AZ,monoAZ],[az,monoaz],[digits,mono09]],      hint:'Tech/code vibe' },
+      { name: 'Script',         maps: [[AZ,scriptAZ],[az,scriptaz]],                  hint:'Elegant—use sparingly' },
+      { name: 'Double-Struck',  maps: [[AZ,doubleAZ],[az,doubleaz],[digits,double09]],hint:'Strong visual style' },
+      { name: 'Fraktur',        maps: [[AZ,frakAZ],[az,frakaz]],                      hint:'Gothic/blackletter feel' },
+      { name: 'Circled',        maps: [[AZ,circAZ],[az,circaz],[digits,circ09]],      hint:'Labels/badges' },
+      { name: 'Squared',        maps: [[AZ,sqAZ],[az,sqaz],[digits,sq09]],            hint:'Blocky emphasis' },
+      { name: 'Small Caps',     maps: [],                                            hint:'Professional, subtle small caps', custom: smallCaps },
+      { name: 'Upside-Down',    maps: [],                                            hint:'Playful; not for long text', custom: upside }
+    ];
+
+    function applyCustom(mapObj, text) {
+      const pieces = preserveSearchables(text);
+      const m = mapObj.map;
+      return pieces.map(p => {
+        if (p.raw) return p.raw;
+        return [...p.text].map(ch => m.get(ch) || m.get(ch.toLowerCase()) || ch).join('');
+      }).join('');
+    }
+
+    function render() {
+      const text = source.value || '';
+      grid.innerHTML = '';
+      sets.forEach(set => {
+        const el = rowTpl.content.firstElementChild.cloneNode(true);
+        $('.font-name', el).textContent = set.name;
+
+        let out = '';
+        if (set.custom) out = applyCustom(set.custom, text);
+        else out = transform(text, set.maps);
+
+        $('.font-output', el).textContent = out || 'Your styled text will appear here…';
+        $('.font-hint',   el).textContent = set.hint || '';
+
+        $('.copy', el).addEventListener('click', async () => {
+          const str = $('.font-output', el).textContent;
+          try {
+            await navigator.clipboard.writeText(str);
+            const btn = $('.copy', el);
+            const prev = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(()=> btn.textContent = prev, 900);
+          } catch {
+            alert('Copy failed. Select and copy manually.');
+          }
+        });
+
+        grid.appendChild(el);
+      });
+    }
+
+    source.addEventListener('input', render);
+    keepSearchable.addEventListener('change', render);
+
+    // Initial demo text
+    source.value = 'Big news: our launch is live 🚀 Keep it classy. #AI #Indiana @Alienpreneur';
+    render();
+  </script>
+</body>
+</html>
