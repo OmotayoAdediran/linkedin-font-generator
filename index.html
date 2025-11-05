@@ -6,26 +6,27 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
   <!-- SEO -->
-  <title>LinkedIn Font Generator | Alienpreneur</title>
-  <meta name="description" content="Style your LinkedIn posts with clear, professional, and expressive fonts. Copy, paste, and post — hashtags and @mentions stay searchable. 100% local processing." />
+  <title>LinkedIn Font Generator – Professional & Fancy Fonts for Posts | Alienpreneur</title>
+  <meta name="description" content="Style your LinkedIn posts with professional and fancy Unicode fonts—clean, readable, and privacy-friendly. Hashtags and @mentions stay searchable. 100% local processing." />
   <link rel="canonical" href="https://fonts.alienpreneur.com/" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="LinkedIn Font Generator | Alienpreneur" />
-  <meta property="og:description" content="Professional fonts for LinkedIn. Clean, readable, and mobile-friendly. 100% local processing." />
+  <meta property="og:title" content="LinkedIn Font Generator – Professional & Fancy Fonts | Alienpreneur" />
+  <meta property="og:description" content="Readable LinkedIn fonts that stand out—no tracking, 100% local. Hashtags and @mentions stay searchable." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://fonts.alienpreneur.com/" />
   <meta property="og:image" content="https://fonts.alienpreneur.com/preview.png" />
+  <meta property="og:site_name" content="Alienpreneur" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="LinkedIn Font Generator | Alienpreneur" />
-  <meta name="twitter:description" content="Make your LinkedIn posts stand out — with clarity and character." />
+  <meta name="twitter:title" content="LinkedIn Font Generator – Professional & Fancy Fonts | Alienpreneur" />
+  <meta name="twitter:description" content="Make LinkedIn headlines pop—professionally. 100% local, no tracking." />
   <meta name="twitter:image" content="https://fonts.alienpreneur.com/preview.png" />
 
   <!-- PWA hooks (safe if missing) -->
   <meta name="theme-color" content="#0b0c0f" />
-  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="manifest" href="/site.webmanifest" />
   <link rel="icon" href="/favicon.png" sizes="32x32" type="image/png" />
   <link rel="icon" href="/favicon-192.png" sizes="192x192" type="image/png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
@@ -43,12 +44,9 @@
   }
   </script>
 
-  <!-- Plausible (privacy-friendly) -->
+  <!-- Plausible (privacy-friendly). Remove this <script> if you don't want analytics. -->
   <script defer data-domain="fonts.alienpreneur.com" src="https://plausible.io/js/script.js"></script>
-  <script>
-    // Safety shim so calling plausible() before the script loads doesn’t throw:
-    window.plausible = window.plausible || function(){ (window.plausible.q = window.plausible.q || []).push(arguments) }
-  </script>
+  <script>window.plausible = window.plausible || function(){(window.plausible.q=window.plausible.q||[]).push(arguments)}</script>
 
   <!-- Styles -->
   <style>
@@ -85,28 +83,41 @@
     .footer{margin-top:24px;color:#cdd6e8;font-size:13px;border-top:1px solid #1e2532;padding-top:12px;display:grid;gap:6px;justify-items:center}
     .link{color:#a6d18a;text-decoration:none;border-bottom:1px dashed #a6d18a}
     .sr-only{position:absolute;left:-9999px}
+    .warn{color:#ffd166}
+    .error{color:#ff8b8b}
+    .dim{opacity:.9}
+    .pill{display:inline-block;background:#10161f;border:1px solid #2b3343;border-radius:999px;padding:2px 8px;margin-left:6px;font-size:12px;color:#cbd5e1}
+    /* Font Compatibility Guide */
+    .font-note summary{cursor:pointer;font-weight:600;color:#81C34D;margin-top:1rem}
+    .font-note ul{margin:.5rem 0 .75rem 1.2rem;line-height:1.45}
+    .font-note p{margin:.4rem 0}
+    .font-note summary::marker{color:#81C34D}
   </style>
 </head>
 <body>
-  <!-- Intro (SEO-visible) -->
+  <!-- Intro -->
   <section style="position:relative; z-index:1; max-width:900px; margin:24px auto 8px; padding:0 16px;">
-    <h1>LinkedIn Font Generator by Alienpreneur</h1>
-    <p class="lead">Style your posts with confidence. Transform ordinary text into clear, professional, and expressive fonts that look great on LinkedIn — and work seamlessly across Instagram, X (Twitter), and WhatsApp.</p>
-    <p class="lead" style="opacity:.9;"><strong>🔒 Privacy-first:</strong> 100% local processing. Your text never leaves your device.</p>
+    <h1>Professional & Fancy LinkedIn Fonts by Alienpreneur</h1>
+    <p class="lead">Style your LinkedIn posts with fonts that blend clarity, creativity, and confidence — without breaking hashtags or mentions.</p>
+    <p class="lead dim"><strong>🔒 Privacy-first:</strong> 100% local processing. Your text never leaves your device.</p>
   </section>
 
   <div class="wrap">
     <div class="card">
       <h2>Enter your text</h2>
-      <textarea id="input" aria-label="Enter text to style" placeholder="Type or paste your LinkedIn text here…"></textarea>
+      <label for="input" class="sr-only">Enter text to style</label>
+      <textarea id="input" placeholder="Type or paste your LinkedIn text here…"></textarea>
 
       <div class="controls">
-        <button class="primary" id="copyPlain" aria-label="Copy plain text">Copy plain text</button>
+        <button class="primary" id="copyPlain" aria-label="Copy plain text">Copy plain</button>
         <button id="titleCase" aria-label="Convert to Title Case">🪄 Title Case</button>
-        <button id="copyAllPro" aria-label="Copy all professional styles">Copy all Professional</button>
+        <button id="copyAllPro" aria-label="Copy all professional styles">Copy all Pro styles</button>
         <button id="clear" aria-label="Clear text">Clear</button>
         <span class="muted count" id="count">0 characters</span>
+        <span class="pill" title="Helpful range for headlines">Headline sweet spot: 220–300</span>
       </div>
+
+      <div id="live" aria-live="polite" class="sr-only"></div>
 
       <div class="divider">Professional styles</div>
       <div class="grid" id="gridPro"></div>
@@ -118,14 +129,24 @@
 
       <div class="divider">Notes</div>
       <div class="preview">
-        <strong>Pro Tip:</strong> Keep hashtags (#Topic) and mentions (@Name) in plain text for search visibility.
-        Styled fonts look great for emphasis and headlines — use them in moderation to stay accessible and professional.
+        <p><strong>Pro Tip:</strong> Keep #hashtags and @mentions in plain text so they stay searchable. Fancy fonts make great <em>headlines</em>—avoid styling full paragraphs for readability.</p>
+
+        <details class="font-note">
+          <summary>💡 Font Compatibility Guide (Why some styles may not show)</summary>
+          <p>Some fonts rely on special Unicode symbols. If your device or browser doesn’t include those glyphs, you may see blank boxes or question-mark diamonds instead of letters.</p>
+          <ul>
+            <li>✅ <strong>Most compatible:</strong> Sans-Serif (Clean) and Small Caps (Prestige).</li>
+            <li>📲 <strong>Improve display:</strong> update your browser/OS or install fonts such as <em>Noto Sans Math</em> or <em>Symbola</em>.</li>
+            <li>🌐 <strong>On LinkedIn:</strong> appearance depends on LinkedIn’s own fonts — what you see here may vary slightly after posting.</li>
+          </ul>
+          <p>We automatically hide any styles your device can’t display, so you only see what works for you.</p>
+        </details>
       </div>
 
       <div class="footer">
-        <div>Works best on LinkedIn — but also enhances your posts on Instagram, X (Twitter), WhatsApp, and more.</div>
+        <div>From fancy to functional, every style stays professional.</div>
         <div>Built by <a class="link" href="https://alienpreneur.com" target="_blank" rel="noopener">Alienpreneur LLC</a> — <em>Where Legacy Meets Innovation.</em></div>
-        <div style="font-size:12px;color:#9aa4b2;">Built for entrepreneurs, creators, and professionals who want clarity with character. No tracking. 100% local processing.</div>
+        <div style="font-size:12px;color:#9aa4b2;">No tracking. 100% local processing.</div>
       </div>
     </div>
   </div>
@@ -139,49 +160,81 @@
 
   <script>
     // ---------- Utilities ----------
-    const src = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const SRC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     function mapBuilder(dst){
-      const need = 62; // 26 + 26 + 10
+      const need = SRC.length; // 62
       let out = dst;
       if(out.length < need){
         const missing = need - out.length;
-        // pad remaining with identity (digits), then spaces to keep indices safe
         out += "0123456789".slice(0, Math.min(10, missing)).padEnd(missing, " ");
       }
       const map = new Map();
       for(let i=0;i<Math.min(need,out.length);i++){
-        map.set(src[i], out[i] || src[i]);
+        map.set(SRC[i], out[i] || SRC[i]);
       }
       return map;
     }
 
-    function transform(text, map){
+    function transformRaw(text, map){
       let res = "";
       for(const ch of text){ res += map.get(ch) ?? ch; }
       return res;
     }
 
+    // Protect hashtags and @mentions (keeps them searchable)
+    function transformWithGuards(text, map){
+      let out = "", i = 0;
+      while (i < text.length){
+        const c = text[i];
+        if (c === "#" || c === "@"){
+          const start = i++;
+          while (i < text.length && /[\p{L}\p{Nd}_.-]/u.test(text[i])) i++;
+          out += text.slice(start, i); // pass through unchanged
+        } else {
+          const start = i++;
+          while (i < text.length && text[i] !== "#" && text[i] !== "@") i++;
+          out += transformRaw(text.slice(start, i), map);
+        }
+      }
+      return out;
+    }
+
     async function copyText(t){
       try{ await navigator.clipboard.writeText(t); }
-      catch(e){
+      catch{
         const ta = document.createElement("textarea");
         ta.value = t; document.body.appendChild(ta); ta.select();
         document.execCommand("copy"); ta.remove();
       }
+      announce("Copied to clipboard.");
+    }
+
+    function announce(msg){
+      const live = document.getElementById("live");
+      if(!live) return;
+      live.textContent = ""; setTimeout(()=> live.textContent = msg, 10);
     }
 
     // Title Case (preserve # and @ tokens; keep small words lower unless first/last)
     function toTitleCase(str){
       const small = new Set(["a","an","and","as","at","but","by","for","from","in","of","on","or","the","to","with"]);
-      const words = str.split(/\s+/);
-      return words.map((w,i)=>{
+      const parts = str.split(/(\s+)/); // keep spaces
+      const wordsOnly = parts.filter((_,i)=> i%2===0);
+      const totalWords = wordsOnly.length;
+      let wordIndex = 0;
+      return parts.map((chunk, idx)=>{
+        if (idx%2===1) return chunk; // whitespace
+        const w = chunk;
         if(!w) return w;
-        if(w.startsWith("#") || w.startsWith("@")) return w; // preserve hashtags/mentions
-        const core = w.toLowerCase();
-        if(i!==0 && i!==words.length-1 && small.has(core)) return core;
-        return core.charAt(0).toUpperCase() + core.slice(1);
-      }).join(" ");
+        if(w.startsWith("#") || w.startsWith("@")){ wordIndex++; return w; }
+        const coreLower = w.toLowerCase();
+        const isFirst = wordIndex === 0;
+        const isLast  = wordIndex === totalWords-1;
+        wordIndex++;
+        if(!isFirst && !isLast && small.has(coreLower)) return coreLower;
+        return coreLower.charAt(0).toUpperCase() + coreLower.slice(1);
+      }).join("");
     }
 
     // ---------- Alphabets ----------
@@ -194,27 +247,32 @@
     const SANS_BOLD =
       "𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭" +
       "𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇" +
-      "𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵";
+      "𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟕𝟠𝟡";
 
     const SANS_ITALIC =
       "𝘈𝘉𝘊𝘋𝘌𝘍𝘎𝘏𝘐𝘑𝘒𝘓𝘔𝘕𝘖𝘗𝘘𝘙𝘚𝘛𝘜𝘝𝘞𝘟𝘠𝘡" +
       "𝘢𝘣𝘤𝘥𝘦𝘧𝘨𝘩𝘪𝘫𝘬𝘭𝘮𝘯𝘰𝘱𝘲𝘳𝘴𝘵𝘶𝘷𝘸𝘹𝘺𝘻" +
       "0123456789";
 
-    const SERIF =
+    const SERIF_BOLD =
       "𝐀𝐁𝐂𝐃𝐄𝐅𝐆𝐇𝐈𝐉𝐊𝐋𝐌𝐍𝐎𝐏𝐐𝐑𝐒𝐓𝐔𝐕𝐖𝐗𝐘𝐙" +
       "𝐚𝐛𝐜𝐝𝐞𝐟𝐠𝐡𝐢𝐣𝐤𝐥𝐦𝐧𝐨𝐩𝐪𝐫𝐬𝐭𝐮𝐯𝐰𝐱𝐲𝐳" +
       "0123456789";
 
+    const SERIF_ITALIC =
+      "𝐴𝐵𝐶𝐷𝐸𝐹𝐺𝐻𝐼𝐽𝐾𝐿𝑀𝑁𝑂𝑃𝑄𝑅𝑆𝑇𝑈𝑉𝑊𝑋𝑌𝑍" +
+      "𝑎𝑏𝑐𝑑𝑒𝑓𝑔𝒉𝒊𝒋𝒌𝒍𝒎𝒏𝑜𝑝𝑞𝑟𝑠𝑡𝑢𝑣𝑤𝑥𝑦𝑧" +
+      "0123456789";
+
     const SMALL_CAPS =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +  /* uppercase stays normal */
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
       "ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ" +
       "0123456789";
 
     const MONO =
       "𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉" +
-      "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣" +
-      "0123456789";
+      "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚣".replace("𝚣","𝚢")+"0123456789";
+      // (Monospace lowercase y/z vary across fonts; keep digits as normal if missing.)
 
     // Creative set
     const CIRCLED =
@@ -228,7 +286,7 @@
       "⓿①②③④⑤⑥⑦⑧⑨";
 
     const FRAKTUR =
-      "𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ" +
+      "𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐ℕ𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ" +
       "𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷" +
       "0123456789";
 
@@ -238,21 +296,27 @@
       "0123456789";
 
     // Build maps
-    const proMaps = {
-      "Sans-Serif (Clean)": mapBuilder(SANS_REG),
-      "Sans-Bold (Confident)": mapBuilder(SANS_BOLD),
-      "Sans-Italic (Modern)": mapBuilder(SANS_ITALIC),
-      "Serif (Classic)": mapBuilder(SERIF),
-      "Small Caps (Prestige)": mapBuilder(SMALL_CAPS),
-      "Monospace (Typewriter)": mapBuilder(MONO)
-    };
+    const proDefs = [
+      { id:"clean",      label:"Sans-Serif (Clean)",        map: mapBuilder(SANS_REG),      always:true },
+      { id:"smallcaps",  label:"Small Caps (Prestige)",     map: mapBuilder(SMALL_CAPS),     always:true },
+      { id:"sansbold",   label:"Sans-Bold (Confident)",     map: mapBuilder(SANS_BOLD) },
+      { id:"sansitalic", label:"Sans-Italic (Modern)",      map: mapBuilder(SANS_ITALIC) },
+      { id:"serifbold",  label:"Serif (Classic)",           map: mapBuilder(SERIF_BOLD) },
+      { id:"serifital",  label:"Serif Italic (Refined)",    map: mapBuilder(SERIF_ITALIC) },
+      { id:"mono",       label:"Monospace (Typewriter)",    map: mapBuilder(MONO) }
+    ];
 
-    const creativeMaps = {
-      "Circled": mapBuilder(CIRCLED),
-      "Squared": mapBuilder(SQUARED),
-      "Fraktur": mapBuilder(FRAKTUR),
-      "Script": mapBuilder(SCRIPT)
-    };
+    const creativeDefs = [
+      { id:"circled", label:"Circled (Playful)", map: mapBuilder(CIRCLED) },
+      { id:"squared", label:"Squared (Block)",   map: mapBuilder(SQUARED) },
+      { id:"fraktur", label:"Fraktur (Gothic)",  map: mapBuilder(FRAKTUR) },
+      { id:"script",  label:"Script (Elegant)",  map: mapBuilder(SCRIPT) }
+    ];
+
+    // ---------- Device support detection ----------
+    const SAMPLE = "AaBbCcDdEe 123";
+    function tofuRate(s){ const m = s.match(/\uFFFD|�/g); return (m?m.length:0)/s.length; }
+    function isSupported(map){ return tofuRate(transformRaw(SAMPLE, map)) <= 0.03; }
 
     // ---------- UI wiring ----------
     const input = document.getElementById("input");
@@ -264,6 +328,9 @@
     const titleCaseBtn = document.getElementById("titleCase");
     const copyAllProBtn = document.getElementById("copyAllPro");
     const creativeToggle = document.getElementById("creativeToggle");
+
+    let supportedPro = [];
+    let supportedCreative = [];
 
     function makeBox(label, text){
       const box = document.createElement("div");
@@ -293,17 +360,26 @@
 
     function render(){
       const val = input.value;
-      count.textContent = `${val.length} characters`;
+      const n = val.length;
+      count.textContent = `${n} characters`;
+      const live = document.getElementById("live");
+      if (n >= 3000){
+        live.textContent = "You are at or above LinkedIn’s 3,000 character limit.";
+      } else if (n >= 2800){
+        live.textContent = "Heads up: LinkedIn post limit is 3,000 characters.";
+      } else {
+        live.textContent = "";
+      }
 
       gridPro.innerHTML = "";
-      for(const label of Object.keys(proMaps)){
-        gridPro.appendChild(makeBox(label, transform(val, proMaps[label])));
-      }
+      supportedPro.forEach(def => {
+        gridPro.appendChild(makeBox(def.label, transformWithGuards(val, def.map)));
+      });
 
       gridCreative.innerHTML = "";
-      for(const label of Object.keys(creativeMaps)){
-        gridCreative.appendChild(makeBox(label, transform(val, creativeMaps[label])));
-      }
+      supportedCreative.forEach(def => {
+        gridCreative.appendChild(makeBox(def.label, transformWithGuards(val, def.map)));
+      });
     }
 
     // Events
@@ -322,17 +398,24 @@
     });
     copyAllProBtn.addEventListener("click", ()=>{
       const val = input.value;
-      const lines = Object.entries(proMaps).map(([label, mp])=> `${label}: ${transform(val, mp)}`);
+      const lines = supportedPro.map(def => `${def.label}: ${transformWithGuards(val, def.map)}`);
       copyText(lines.join("\n"));
       plausible("copy_all_pro");
     });
     creativeToggle.addEventListener("toggle", ()=>{
-      // fires when opened/closed
       plausible("creative_toggle", { props: { open: creativeToggle.open ? "true" : "false" }});
     });
 
-    // Initial demo line (SEO + good first impression)
-    input.value = "Make Your LinkedIn Posts Stand Out with Professional Fonts by Alienpreneur";
+    // Determine supported styles for THIS device (hide tofu-prone ones)
+    function detectSupport(){
+      supportedPro = proDefs.filter(def => def.always || isSupported(def.map));
+      supportedCreative = creativeDefs.filter(def => isSupported(def.map));
+    }
+
+    // Initial content
+    input.value = "Make Your LinkedIn Posts Stand Out with Professional & Fancy Fonts by Alienpreneur";
+
+    detectSupport();
     render();
 
     // PWA: register service worker (safe if missing)
