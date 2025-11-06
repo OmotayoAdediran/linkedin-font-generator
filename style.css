@@ -84,3 +84,5 @@ textarea{
 .button.ghost{background:transparent}
 
 .muted{color:var(--muted)}
+/* Public-only hider — slap this class on anything you don't want visible */
+.public-hide { display: none !important; }
