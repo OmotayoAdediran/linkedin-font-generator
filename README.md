@@ -1,3 +1,5 @@
+[📄 View Project Summary (PDF)](./docs/LinkedIn_Font_Generator_Project_Summary_Alienpreneur_Nov2025.pdf)
+
 📘 **Project Notes:**  
 See the full internal documentation here → [PROJECT_NOTES.pdf](PROJECT_NOTES.pdf)
 
